@@ -2,7 +2,8 @@
 calculate GC percentage for reference genomes with multiple windows
 
 # Dependency
-IntSiteRetriver: 
+
+IntSiteRetriver(only for testing and timing): 
     https://github.com/anatolydryga/intSiteRetriever
 
 
