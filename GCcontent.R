@@ -1,5 +1,5 @@
 library(BSgenome)
-library(Repitools)
+library(Biostrings)
 
 #' calulate GC for several window sizes
 #'
@@ -10,30 +10,43 @@ library(Repitools)
 #' @note start up time to load human genome is about 10 second
 getGCpercentage <- function(
     sites, column_prefix, window_size, reference_genome_sequence
-) {
+){
     stopifnot(length(window_size) == length(names(window_size)))
     metadata <- mcols(sites)
-    chrom_position <- convert_GRange_to_chr_pos(sites)
-    sapply(1:length(window_size), function(i) {
-        val <- window_size[i]
-        name <- names(window_size)[i]
-        column_name <- paste0(column_prefix, ".", name)
-        metadata[[column_name]] <<- get_gc_percentage_for_single_window(
-            chrom_position, val, reference_genome_sequence)
-    })
-    mcols(sites) <- metadata
+
+    rangesToCalc <- expand_trim_GRanges(sites,
+            reference_genome_sequence, window_size)
+
+    #seqs will take a lot of memory
+    #could split at severe cpu time penelty
+    seqs <- getSeq(reference_genome_sequence, rangesToCalc, as.character=F)
+
+    letterFreqs <- letterFrequency(seqs, c("G", "C", "A", "T"))
+    rm(seqs)
+
+    GC <- letterFreqs[, c("G", "C")]
+    ATGC <- letterFreqs[, c("A", "T", "G", "C")]
+
+    gcContent <- rowSums(GC)/rowSums(ATGC)
+
+    gcContent[!is.finite(gcContent)] <- NA #handled gracefully by pipeUtils
+
+    gcContent <- DataFrame(matrix(gcContent, nrow=length(sites)))
+
+    names(gcContent) <- paste(column_prefix, names(window_size), sep=".")
+
+    mcols(sites) <- cbind(metadata, gcContent)
+
     sites
 }
 
-get_gc_percentage_for_single_window <- function(chrom_position, window, ref_genome_seq) {
-    stopifnot(length(window) == 1)
-    gcContentCalc(chrom_position, ref_genome_seq, window)
-}
+expand_trim_GRanges <- function(sites, organism, window_size) {
+  nsites <- length(sites)
+  strand(sites) = "+" #unimportant for GC and speeds up later calculations
+  sites <- rep(sites, length(window_size))
+  sites <- trim(suppressWarnings(flank(sites,
+                                       rep(window_size/2, each=nsites),
+                                       both=T)))
 
-convert_GRange_to_chr_pos <- function(sites) {
-    data.frame(
-        "chr"=as.character(seqnames(sites)), 
-        "position"=as.numeric(start(sites)),
-        stringsAsFactors=FALSE
-    )
+  sites
 }

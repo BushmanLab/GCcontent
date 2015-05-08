@@ -40,7 +40,7 @@ test_that("can calculate GC for case with window larger than genome start/end", 
 })
 
 test_that("Ns are ignored", {
-    expect_true(GC_small[3] > 0)
-    expect_true(GC_small[3] < 0.2)
+    expect_true(GC_small[3] > 0.1)
+    expect_true(GC_small[3] < 0.3)
 })
 
