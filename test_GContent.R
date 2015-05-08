@@ -24,6 +24,11 @@ test_that("can calculate GC for case with all bases known and valid window", {
     expect_true(GC_small[3] < 1)
 })
 
+test_that("single window works", {
+    window_size_singleton <- c(small=10)
+    getGCpercentage(sites, "GC", window_size_singleton, reference)
+})
+
 test_that("if all Ns need NA", {
     expect_true(is.na(GC_small[2]))
     expect_true(is.na(GC_large[2]))

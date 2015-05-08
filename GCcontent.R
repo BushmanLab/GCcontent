@@ -14,7 +14,7 @@ getGCpercentage <- function(
     stopifnot(length(window_size) == length(names(window_size)))
     metadata <- mcols(sites)
     chrom_position <- convert_GRange_to_chr_pos(sites)
-    sapply(seq(window_size), function(i) {
+    sapply(1:length(window_size), function(i) {
         val <- window_size[i]
         name <- names(window_size)[i]
         column_name <- paste0(column_prefix, ".", name)
