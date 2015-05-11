@@ -44,3 +44,16 @@ test_that("Ns are ignored", {
     expect_true(GC_small[3] < 0.3)
 })
 
+
+mitochondria <- GRanges(
+    seqnames=Rle(c("chrM")),
+    ranges=IRanges(start=c(10000), width=rep(1, 1)),
+    strand=Rle(c("+")),
+    seqinfo=human_seqinfo
+)
+
+test_that("can calculate GC for mitochondria", {
+    mito_GC <- getGCpercentage(mitochondria, window_size, reference)
+    expect_true(mito_GC[1] > 0)
+    expect_true(mito_GC[1] < 1)
+})
