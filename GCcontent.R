@@ -14,8 +14,7 @@ getGCpercentage <- function(
     stopifnot(length(window_size) == length(names(window_size)))
     metadata <- mcols(sites)
 
-    rangesToCalc <- expand_trim_GRanges(sites,
-            reference_genome_sequence, window_size)
+    rangesToCalc <- expand_trim_GRanges(sites, window_size)
 
     #seqs will take a lot of memory
     #could split at severe cpu time penelty
@@ -40,13 +39,18 @@ getGCpercentage <- function(
     sites
 }
 
-expand_trim_GRanges <- function(sites, organism, window_size) {
-  nsites <- length(sites)
-  strand(sites) = "+" #unimportant for GC and speeds up later calculations
-  sites <- rep(sites, length(window_size))
-  sites <- trim(suppressWarnings(flank(sites,
+expand_trim_GRanges <- function(sites, window_size) {
+    nsites <- length(sites)
+    strand(sites) = "+" #unimportant for GC and speeds up later calculations
+
+    sites.seqinfo.original <- seqinfo(sites)
+    isCircular(seqinfo(sites)) <- rep(FALSE, length(seqinfo(sites)))
+
+    sites <- rep(sites, length(window_size))
+    sites <- trim(suppressWarnings(flank(sites,
                                        rep(window_size/2, each=nsites),
                                        both=T)))
 
-  sites
+    seqinfo(sites) = sites.seqinfo.original
+    sites
 }

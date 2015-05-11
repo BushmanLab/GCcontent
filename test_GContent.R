@@ -53,7 +53,7 @@ mitochondria <- GRanges(
 )
 
 test_that("can calculate GC for mitochondria", {
-    mito_GC <- getGCpercentage(mitochondria, window_size, reference)
-    expect_true(mito_GC[1] > 0)
-    expect_true(mito_GC[1] < 1)
+    mito_GC <- getGCpercentage(mitochondria, "GC", window_size, reference)
+    expect_true(mito_GC$GC.small[1] > 0)
+    expect_true(mito_GC$GC.small[1] < 1)
 })
