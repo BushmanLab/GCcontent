@@ -7,4 +7,4 @@ Depends: R (>= 3.2.1)
 License: What license is it under?
 LazyData: true
 Suggests: testthat, BSgenome.Scerevisiae.UCSC.sacCer2
-Imports: intSiteRetriever, Biostrings, BSgenome, S4Vectors
+Imports: Biostrings, BSgenome, GenomicRanges, GenomeInfoDb, S4Vectors, intSiteRetriever
