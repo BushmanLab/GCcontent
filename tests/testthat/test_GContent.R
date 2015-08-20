@@ -1,13 +1,13 @@
 context("Testing GC perecntage calculation and edge cases")
 
-reference <- intSiteRetriever::get_reference_genome("hg18")
-human_seqinfo <- seqinfo(reference)
+reference <- intSiteRetriever::get_reference_genome("sacCer2")
+sac_seqinfo <- seqinfo(reference)
 
 sites <- GRanges(
-    seqnames=Rle(c("chr1", "chr11", "chr11")),
+    seqnames=Rle(c("chrI", "chrII", "chrV")),
     ranges=IRanges(start=c(100, 200, 50000), width=rep(1, 3)),
     strand=Rle(c("+", "-", "+")),
-    seqinfo=human_seqinfo
+    seqinfo=sac_seqinfo
 )
 
 window_size <- c(small=10, large=1000)
@@ -27,9 +27,29 @@ test_that("single window works", {
     getGCpercentage(sites, "GC", window_size_singleton, reference)
 })
 
-test_that("if all Ns need NA", {
-    expect_true(is.na(GC_small[2]))
-    expect_true(is.na(GC_large[2]))
+test_that("if all Ns need NA; Ns are ignored", {
+    # we don't have human genome on travis becouse of memory restriction
+    skip_if_not_installed("BSgenome.Hsapiens.UCSC.hg18")
+    reference <- intSiteRetriever::get_reference_genome("hg18")
+    human_seqinfo <- seqinfo(reference)
+
+    sites <- GRanges(
+        seqnames=Rle(c("chr11", "chr11")),
+        ranges=IRanges(start=c(200, 50000), width=rep(1, 2)),
+        strand=Rle(c("-", "+")),
+        seqinfo=human_seqinfo
+    )
+
+    window_size <- c(small=10, large=1000)
+    sites_GC <- getGCpercentage(sites, "GC", window_size, reference)
+    GC_small <- sites_GC$GC.small
+    GC_large <- sites_GC$GC.large
+
+    expect_true(is.na(GC_small[1]))
+    expect_true(is.na(GC_large[1]))
+
+    expect_true(GC_small[2] > 0.1)
+    expect_true(GC_small[2] < 0.3)
 })
 
 test_that("can calculate GC for case with window larger than genome start/end", {
@@ -37,17 +57,11 @@ test_that("can calculate GC for case with window larger than genome start/end", 
     expect_true(GC_large[1] < 1)
 })
 
-test_that("Ns are ignored", {
-    expect_true(GC_small[3] > 0.1)
-    expect_true(GC_small[3] < 0.3)
-})
-
-
 mitochondria <- GRanges(
     seqnames=Rle(c("chrM")),
-    ranges=IRanges(start=c(10000), width=rep(1, 1)),
+    ranges=IRanges(start=c(5000), width=rep(1, 1)),
     strand=Rle(c("+")),
-    seqinfo=human_seqinfo
+    seqinfo=sac_seqinfo
 )
 
 test_that("can calculate GC for mitochondria", {
