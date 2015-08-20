@@ -9,11 +9,6 @@ notifications:
     on_success: change
     on_failure: change
 
-bioc_packages:
-  - BSgenome
-  - GenomicRanges
-  - Biostrings
-
 r_github_packages:
   - jimhester/covr
   - BushmanLab/intSiteRetriever
