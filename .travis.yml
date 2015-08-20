@@ -12,6 +12,7 @@ notifications:
 bioc_packages:
   - BSgenome
   - GenomicRanges
+  - Biostrings
 
 r_github_packages:
   - jimhester/covr
