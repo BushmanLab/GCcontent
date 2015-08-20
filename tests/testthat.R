@@ -3,6 +3,6 @@ library(GCcontent)
 library(intSiteRetriever)
 library(BSgenome)
 library(S4Vectors)
-library(BSgenome.Hsapiens.UCSC.hg18)
+library(BSgenome.Scerevisiae.UCSC.sacCer2)
 
 test_check("GCcontent")
