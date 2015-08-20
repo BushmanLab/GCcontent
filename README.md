@@ -1,18 +1,16 @@
+[![Travis-CI Build Status](https://travis-ci.org/BushmanLab/GCcontent.svg?branch=master)](https://travis-ci.org/BushmanLab/GCcontent)
+
+[![codecov.io](http://codecov.io/github/BushmanLab/GCcontent/coverage.svg?branch=master)](http://codecov.io/github/BushmanLab/GCcontent?branch=master)
+
+
 # GCcontent
+
 calculate GC percentage for reference genomes with multiple windows
 
 # Dependency
 
-IntSiteRetriver(only for testing and timing): 
+IntSiteRetriver(only for testing and timing) should be installed: 
     https://github.com/anatolydryga/intSiteRetriever
-
-has to be cloned:
-
-```bash
-git clone https://github.com/anatolydryga/intSiteRetriever
-
-```
-
 
 # Testing 
 
@@ -20,8 +18,7 @@ Run in the R console:
 
 ```bash
 library(testthat)
-source('GCcontent.R')
-test_dir(".")
+devtools::test()
 ```
 
 # Timing 

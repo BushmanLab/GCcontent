@@ -1,8 +1,6 @@
-source("intSiteRetriever/random_site.R")
-
 context("Testing GC perecntage calculation and edge cases")
 
-reference <- get_reference_genome("hg18")
+reference <- intSiteRetriever::get_reference_genome("hg18")
 human_seqinfo <- seqinfo(reference)
 
 sites <- GRanges(
@@ -57,3 +55,4 @@ test_that("can calculate GC for mitochondria", {
     expect_true(mito_GC$GC.small[1] > 0)
     expect_true(mito_GC$GC.small[1] < 1)
 })
+
