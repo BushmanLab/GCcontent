@@ -8,3 +8,4 @@ License: What license is it under?
 LazyData: true
 Suggests: testthat, BSgenome.Scerevisiae.UCSC.sacCer2, intSiteRetriever
 Imports: Biostrings, BSgenome, GenomicRanges, GenomeInfoDb, S4Vectors
+RoxygenNote: 6.0.1.9000

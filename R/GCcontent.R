@@ -30,16 +30,18 @@
 getGCpercentage <- function(
     sites, column_prefix, window_size, reference_genome_sequence
 ){
+    stopifnot(class(sites) == "GRanges")
     stopifnot(length(window_size) == length(names(window_size)))
-    metadata <- mcols(sites)
+    metadata <- GenomicRanges::mcols(sites)
 
     rangesToCalc <- .expand_trim_GRanges(sites, window_size)
 
    #seqs will take a lot of memory
     #could split at severe cpu time penelty
-    seqs <- getSeq(reference_genome_sequence, rangesToCalc, as.character=F)
+    seqs <- BSgenome::getSeq(
+        reference_genome_sequence, rangesToCalc, as.character = FALSE)
 
-    letterFreqs <- letterFrequency(seqs, c("G", "C", "A", "T"))
+    letterFreqs <- Biostrings::letterFrequency(seqs, c("G", "C", "A", "T"))
     rm(seqs)
 
     GC <- letterFreqs[, c("G", "C")]
@@ -49,11 +51,11 @@ getGCpercentage <- function(
 
     gcContent[!is.finite(gcContent)] <- NA #handled gracefully by pipeUtils
 
-    gcContent <- DataFrame(matrix(gcContent, nrow=length(sites)))
+    gcContent <- S4Vectors::DataFrame(matrix(gcContent, nrow = length(sites)))
 
     names(gcContent) <- paste(column_prefix, names(window_size), sep=".")
 
-    mcols(sites) <- cbind(metadata, gcContent)
+    GenomicRanges::mcols(sites) <- cbind(metadata, gcContent)
 
     sites
 }
@@ -62,14 +64,14 @@ getGCpercentage <- function(
     nsites <- length(sites)
     strand(sites) = "+" #unimportant for GC and speeds up later calculations
 
-    sites.seqinfo.original <- seqinfo(sites)
-    isCircular(seqinfo(sites)) <- rep(FALSE, length(seqinfo(sites)))
+    sites.seqinfo.original <- GenomicRanges::seqinfo(sites)
+    isCircular(GenomicRanges::seqinfo(sites)) <- rep(
+        FALSE, length(GenomicRanges::seqinfo(sites)))
 
     sites <- rep(sites, length(window_size))
-    sites <- trim(suppressWarnings(flank(sites,
-                                       rep(window_size/2, each=nsites),
-                                       both=T)))
+    sites <- GenomicRanges::trim(suppressWarnings(GenomicRanges::flank(
+        sites, rep(window_size/2, each = nsites), both = TRUE)))
 
-    seqinfo(sites) = sites.seqinfo.original
+    GenomicRanges::seqinfo(sites) <- sites.seqinfo.original
     sites
 }

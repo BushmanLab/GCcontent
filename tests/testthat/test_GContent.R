@@ -1,14 +1,13 @@
 context("Testing GC perecntage calculation and edge cases")
 
 reference <- intSiteRetriever::get_reference_genome("sacCer2")
-sac_seqinfo <- seqinfo(reference)
+sac_seqinfo <- BSgenome::seqinfo(reference)
 
-sites <- GRanges(
-    seqnames=Rle(c("chrI", "chrII", "chrV")),
-    ranges=IRanges(start=c(100, 200, 50000), width=rep(1, 3)),
-    strand=Rle(c("+", "-", "+")),
-    seqinfo=sac_seqinfo
-)
+sites <- GenomicRanges::GRanges(
+    seqnames = S4Vectors::Rle(c("chrI", "chrII", "chrV")),
+    ranges = IRanges::IRanges(start=c(100, 200, 50000), width=rep(1, 3)),
+    strand = S4Vectors::Rle(c("+", "-", "+")),
+    seqinfo = sac_seqinfo)
 
 window_size <- c(small=10, large=1000)
 sites_GC <- getGCpercentage(sites, "GC", window_size, reference)
